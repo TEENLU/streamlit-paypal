@@ -85,8 +85,8 @@ if 'payment' not in st.session_state:
             redirect_uri=PAYPAL_REDIRECT_URI,
             description=description,
             key='payment_btn',
-            use_container_width=True,
-            icon='💳'
+            use_container_width=True
+            # Note: icon parameter can cause path issues with emoji, omitted for now
         )
 
         if result:

@@ -281,22 +281,11 @@ class PayPalComponent:
       response.raise_for_status()
       order = response.json()
 
-      # Debug: Log order response (remove in production)
-      import sys
-      print(f"DEBUG: Order created: {order.get('id')}", file=sys.stderr)
-      print(f"DEBUG: Order status: {order.get('status')}", file=sys.stderr)
-      print(f"DEBUG: Order links: {order.get('links')}", file=sys.stderr)
-
       # Store order ID with timestamp for CSRF protection
       st.session_state.paypal_pending_orders[order['id']] = time.time()
 
       return order
     except requests.exceptions.RequestException as e:
-      # Debug: Log error details
-      import sys
-      print(f"DEBUG: API Error: {e}", file=sys.stderr)
-      if hasattr(e.response, 'text'):
-        print(f"DEBUG: Response: {e.response.text}", file=sys.stderr)
       raise PayPalError(f"Failed to create order: {str(e)}")
 
   def _capture_order(self, order_id: str) -> Dict[str, Any]:
