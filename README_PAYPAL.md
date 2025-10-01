@@ -24,9 +24,8 @@ pip install streamlit-oauth
 1. Go to [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/applications)
 2. Create a new app or use an existing one
 3. Copy your **Sandbox** Client ID and Secret (for testing)
-4. Configure your redirect URI: `https://your-domain/component/streamlit_oauth.authorize_button`
 
-> **Note:** The callback URL uses `authorize_button` because this component is built on streamlit-oauth's architecture. This endpoint handles both OAuth and PayPal callbacks. The name refers to the user authorizing/approving the payment.
+> **Note:** Unlike OAuth apps, PayPal does **not** require you to pre-configure a redirect URI in the Developer Dashboard. The redirect URI is specified dynamically when creating each order.
 
 ### 2. Basic Usage
 
@@ -105,13 +104,15 @@ payment_button(
 - `name` (str): Button label
 - `amount` (float): Payment amount
 - `currency` (str): Currency code (e.g., 'USD', 'EUR', 'TWD')
-- `redirect_uri` (str): Redirect URI after payment (must match PayPal app settings)
+- `redirect_uri` (str, optional): Redirect URI after payment completion/cancellation
 - `description` (str): Payment description
 - `key` (str): Unique button identifier
 - `icon` (str): Button icon (data URI or URL)
 - `use_container_width` (bool): Expand button to container width
 - `popup_height` (int): Popup window height
 - `popup_width` (int): Popup window width
+
+> **Note:** The `redirect_uri` parameter is **optional** for PayPal. If not provided, PayPal will use the approval URL from the order response. This is different from OAuth where redirect_uri is required.
 
 **Returns:**
 - `dict` or `None`: Payment result containing:

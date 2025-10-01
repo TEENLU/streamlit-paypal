@@ -10,7 +10,8 @@
       "Bash(git remote remove:*)",
       "Bash(git commit:*)",
       "Bash(git rev-list:*)",
-      "mcp__sequential-thinking__sequentialthinking"
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(python test_paypal_component.py:*)"
     ],
     "deny": [],
     "ask": []

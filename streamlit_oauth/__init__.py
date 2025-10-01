@@ -229,7 +229,7 @@ class PayPalComponent:
     except requests.exceptions.RequestException as e:
       raise PayPalError(f"Failed to get access token: {str(e)}")
 
-  def _create_order(self, amount: float, currency: str, description: str) -> Dict[str, Any]:
+  def _create_order(self, amount: float, currency: str, description: str, return_url: str = None, cancel_url: str = None) -> Dict[str, Any]:
     """
     Create PayPal order on backend (secure).
 
@@ -237,11 +237,37 @@ class PayPalComponent:
       amount: Payment amount
       currency: Currency code (e.g., 'USD', 'TWD')
       description: Payment description
+      return_url: URL to redirect after approval (optional, uses approval URL if not set)
+      cancel_url: URL to redirect on cancellation (optional)
 
     Returns:
       Order object with 'id' field
     """
     access_token = self._get_access_token()
+
+    # Build order request
+    order_request = {
+      'intent': 'CAPTURE',
+      'purchase_units': [{
+        'amount': {
+          'currency_code': currency,
+          'value': f'{amount:.2f}'
+        },
+        'description': description
+      }]
+    }
+
+    # Add payment source with return/cancel URLs if provided
+    if return_url or cancel_url:
+      order_request['payment_source'] = {
+        'paypal': {
+          'experience_context': {}
+        }
+      }
+      if return_url:
+        order_request['payment_source']['paypal']['experience_context']['return_url'] = return_url
+      if cancel_url:
+        order_request['payment_source']['paypal']['experience_context']['cancel_url'] = cancel_url
 
     try:
       response = requests.post(
@@ -250,16 +276,7 @@ class PayPalComponent:
           'Content-Type': 'application/json',
           'Authorization': f'Bearer {access_token}'
         },
-        json={
-          'intent': 'CAPTURE',
-          'purchase_units': [{
-            'amount': {
-              'currency_code': currency,
-              'value': f'{amount:.2f}'
-            },
-            'description': description
-          }]
-        }
+        json=order_request
       )
       response.raise_for_status()
       order = response.json()
@@ -343,7 +360,15 @@ class PayPalComponent:
       Payment result dict if successful, None if pending
     """
     # Create order on backend (secure)
-    order = self._create_order(amount, currency, description)
+    # Note: redirect_uri is optional for PayPal (unlike OAuth)
+    # If not provided, PayPal uses the approval URL from order response
+    order = self._create_order(
+      amount=amount,
+      currency=currency,
+      description=description,
+      return_url=redirect_uri,
+      cancel_url=redirect_uri
+    )
 
     # Get approval URL from order links
     approval_url = None
