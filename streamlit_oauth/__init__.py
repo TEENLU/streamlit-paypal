@@ -10,6 +10,15 @@ import secrets
 import requests
 from typing import Optional, Dict, Any
 
+# OAuth2 dependencies (for original OAuth2Component)
+try:
+    from httpx_oauth.oauth2 import OAuth2, OAuth2ClientAuthMethod
+    HAS_OAUTH = True
+except ImportError:
+    HAS_OAUTH = False
+    OAuth2 = None
+    OAuth2ClientAuthMethod = None
+
 _RELEASE = False
 # comment out the following line to use the local dev server
 # use streamlit run __init__.py --server.enableCORS=false to run the local dev server

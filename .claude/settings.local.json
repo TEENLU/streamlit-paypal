@@ -7,7 +7,8 @@
       "Bash(git add:*)",
       "Bash(git branch:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nchore: fork streamlit-oauth for PayPal adaptation\n\nInitialize independent repository from streamlit-oauth project\nfor PayPal payment integration development.\n\nOriginal project: https://github.com/dnplus/streamlit-oauth\n\nChanges:\n- Add PAYPAL_DESIGN.md documenting architecture decisions\n- Prepare for PayPal Orders API integration\n- Maintain popup-based callback mechanism\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git remote remove:*)"
+      "Bash(git remote remove:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
