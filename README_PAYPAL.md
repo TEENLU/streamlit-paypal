@@ -26,6 +26,8 @@ pip install streamlit-oauth
 3. Copy your **Sandbox** Client ID and Secret (for testing)
 4. Configure your redirect URI: `https://your-domain/component/streamlit_oauth.authorize_button`
 
+> **Note:** The callback URL uses `authorize_button` because this component is built on streamlit-oauth's architecture. This endpoint handles both OAuth and PayPal callbacks. The name refers to the user authorizing/approving the payment.
+
 ### 2. Basic Usage
 
 ```python

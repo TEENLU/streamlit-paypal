@@ -31,6 +31,8 @@ st.markdown("---")
 # Get credentials from environment
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
+# Redirect URI: The callback endpoint after payment approval
+# Format: https://your-domain/component/streamlit_oauth.authorize_button
 PAYPAL_REDIRECT_URI = os.getenv('PAYPAL_REDIRECT_URI')
 
 if not all([PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET]):
