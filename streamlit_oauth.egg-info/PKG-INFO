@@ -1,129 +1,239 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: streamlit-oauth
 Version: 0.1.14
 Summary: Simple OAuth2 authorization code flow for Streamlit
 Home-page: https://github.com/dnplus/streamlit-oauth
 Author: Dylan Lu
 Author-email: dnplus@gmail.com
-License: UNKNOWN
-Description: # 🔐 Streamlit OAuth: Enhance Your Data Apps with Seamless Integration
-        [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://g-openid-demo.streamlit.app/)
-        
-        **Effortlessly integrate OAuth2 authorization into your Streamlit apps using the streamlined httpx_oauth wrapper**
-        
-        ## Why Streamlit OAuth?
-        
-        In today's digital landscape, authorization is crucial for accessing and utilizing data from various applications. With Streamlit OAuth, you can easily incorporate OAuth2 authorization into your Streamlit data apps, allowing you to securely and efficiently fetch data from other applications. This powerful integration unlocks the full potential of your Streamlit data-driven applications, enabling you to create more dynamic and interactive user experiences.
-        
-        ## Installation
-        
-        `pip install streamlit-oauth`
-        
-        ## Getting started
-        
-        To use Streamlit OAuth, you need to create an OAuth2 component with your authentication details (set your callback url to `https://<YOUR ADDRESS>/component/streamlit_oauth.authorize_button`):
-        
-        ```python
-        import streamlit as st
-        from streamlit_oauth import OAuth2Component
-        import os
-        
-        # Load environment variables from .env file
-        from dotenv import load_dotenv
-        load_dotenv()
-        
-        # Set environment variables
-        AUTHORIZE_URL = os.environ.get('AUTHORIZE_URL')
-        TOKEN_URL = os.environ.get('TOKEN_URL')
-        REFRESH_TOKEN_URL = os.environ.get('REFRESH_TOKEN_URL')
-        REVOKE_TOKEN_URL = os.environ.get('REVOKE_TOKEN_URL')
-        CLIENT_ID = os.environ.get('CLIENT_ID')
-        CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-        REDIRECT_URI = os.environ.get('REDIRECT_URI')
-        SCOPE = os.environ.get('SCOPE')
-        
-        # Create OAuth2Component instance
-        oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, REFRESH_TOKEN_URL, REVOKE_TOKEN_URL)
-        
-        # Check if token exists in session state
-        if 'token' not in st.session_state:
-            # If not, show authorize button
-            result = oauth2.authorize_button("Authorize", REDIRECT_URI, SCOPE)
-            if result and 'token' in result:
-                # If authorization successful, save token in session state
-                st.session_state.token = result.get('token')
-                st.rerun()
-        else:
-            # If token exists in session state, show the token
-            token = st.session_state['token']
-            st.json(token)
-            if st.button("Refresh Token"):
-                # If refresh token button is clicked, refresh the token
-                token = oauth2.refresh_token(token)
-                st.session_state.token = token
-                st.rerun()
-        
-        ```
-        
-        more examples can be found in the [examples](https://github.com/dnplus/streamlit-oauth/tree/main/examples)
-        
-        **Parameters:**
-        
-        * `client_id`: The OAuth2 client id provided by the authorization server.
-        * `client_secret`: The OAuth2 client secret provided by the authorization server.
-        * `authroize_endpoint`: The authorization endpoint URL of the OAuth2 server. (Deprecated for typo.)
-        * `authorize_endpoint`: The authorization endpoint URL of the OAuth2 server.
-        * `token_endpoint`: The token endpoint URL of the OAuth2 server.
-        * `refresh_token_endpoint`: The refresh token endpoint URL of the OAuth2 server.
-        * `revoke_token_endpoint`: The revoke token endpoint URL of the OAuth2 server.
-        * `client`: The httpx_oauth client to be used for the requests, default is None, if specified other arguments will be ignored.
-        
-        ### `authorize_button(self, name, redirect_uri, scope, height=800, width=600, key=None, extras_params={}, pkce=None, use_container_width=False, icon=None)`
-        
-        Generates an HTML button that initiates the OAuth2 authorization code grant flow. The button opens a popup window that prompts the user to authorize the application.
-        
-        **Parameters:**
-        
-        * `name`: The name to be displayed on the button.
-        * `redirect_uri`: The URL where the authorization server will redirect the user after the authorization process is completed.
-        * `scope`: The OAuth2 scopes required by the application.
-        * `height`: The height of the popup window.
-        * `width`: The width of the popup window.
-        * `key`: The unique key of the button component.
-        * `extra_params`: A dictionary containing extra parameters to be sent to the authorization server.
-        * `pkce`: accept value `S256` indicating whether to use PKCE (Proof Key for Code Exchange) for the authorization code grant flow.
-        * `use_container_width`: If `True`, set the button width to the container width.
-        * `icon`: The icon to be displayed on the button.
-        * `auto_click`: If `True`, the button will be clicked automatically.
-        
-        **Returns:**
-        
-        * A dictionary containing the authorization code or access token object, depending on the flow.
-        
-        ### `refresh_token(self, token, force=False)`
-        
-        Refreshes the access token using the refresh token. If the token is not expired, the function returns the same token.
-        
-        **Parameters:**
-        
-        * `token`: The access token object to be refreshed.
-        * `force`: A boolean value that forces the refresh token to be used, even if the access token is not expired.
-        
-        **Returns:**
-        
-        * A dictionary containing the new access token or the same access token if it has not expired.
-        
-        ### `revoke_token(self, token, token_type_hint='access_token')`
-        
-        **Parameters:**
-        
-        * `token`: The access token object to be revoked.
-        * `token_type_hint`: A hint about the type of the token submitted for revocation.
-        
-        **Returns:**
-        
-        * A boolean value indicating whether the token was revoked successfully.
-        
-Platform: UNKNOWN
 Requires-Python: >=3.9
 Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: streamlit>=1.28.1
+Requires-Dist: httpx-oauth==0.15.1
+Requires-Dist: requests>=2.31.0
+Requires-Dist: python-dotenv==1.0.1
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# 💳 Streamlit OAuth + PayPal Integration
+
+[![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Streamlit](https://img.shields.io/badge/streamlit-1.28+-red.svg)](https://streamlit.io)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+**安全、優雅的 Streamlit 付款與認證組件**
+
+這個專案是從 [streamlit-oauth](https://github.com/dnplus/streamlit-oauth) fork 並擴展，新增了完整的 PayPal 付款支援，同時保留原有的 OAuth2 認證功能。
+
+## ✨ 特色
+
+### 💳 PayPal 付款支援（新功能）
+- 🔒 **安全優先**：Client Secret 只在後端使用
+- 🪟 **Popup 結帳**：專業的彈窗付款體驗
+- ✅ **自動捕獲**：付款完成後自動捕獲訂單
+- 🛡️ **CSRF 防護**：內建安全機制
+- 🌍 **多幣別**：支援 USD、EUR、GBP、TWD 等
+- 🧪 **Sandbox 就緒**：輕鬆使用 PayPal 測試環境
+
+### 🔐 OAuth2 認證（原功能保留）
+- 支援多種 OAuth 提供商（Google、GitHub、Discord 等）
+- PKCE 支援
+- Token 刷新與撤銷
+
+## 🚀 快速開始
+
+### 安裝
+
+```bash
+pip install -e .
+```
+
+### PayPal 付款範例
+
+```python
+import streamlit as st
+from streamlit_oauth import PayPalComponent
+import os
+
+# 初始化 PayPal 組件
+paypal = PayPalComponent(
+    client_id=os.getenv('PAYPAL_CLIENT_ID'),
+    client_secret=os.getenv('PAYPAL_CLIENT_SECRET'),
+    mode='sandbox'  # 測試環境
+)
+
+# 創建付款按鈕
+if 'payment' not in st.session_state:
+    result = paypal.payment_button(
+        name="支付 $10 USD",
+        amount=10.00,
+        currency='USD',
+        description='購買商品'
+    )
+
+    if result:
+        st.session_state.payment = result
+        st.rerun()
+else:
+    st.success(f"付款成功！訂單 ID: {st.session_state.payment['order_id']}")
+```
+
+### OAuth2 認證範例
+
+```python
+import streamlit as st
+from streamlit_oauth import OAuth2Component
+
+# 初始化 OAuth2 組件
+oauth2 = OAuth2Component(
+    client_id='your_client_id',
+    client_secret='your_client_secret',
+    authorize_endpoint='https://accounts.google.com/o/oauth2/auth',
+    token_endpoint='https://oauth2.googleapis.com/token'
+)
+
+# 創建登入按鈕
+result = oauth2.authorize_button(
+    name="Login with Google",
+    redirect_uri='https://your-app/component/streamlit_oauth.authorize_button',
+    scope='openid email'
+)
+```
+
+## 📚 文檔
+
+- **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - 專案總覽與結構
+- **[PAYPAL_DESIGN.md](PAYPAL_DESIGN.md)** - PayPal 整合設計文檔
+- **[README_PAYPAL.md](README_PAYPAL.md)** - PayPal 完整使用指南
+- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - 測試指南
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - 實作總結
+
+## 🧪 測試
+
+### 快速測試（一鍵完成）
+
+```bash
+./quick_test.sh
+```
+
+### 手動測試
+
+```bash
+# 1. 單元測試
+python test_paypal_component.py
+
+# 2. 啟動範例應用
+streamlit run examples/paypal_basic.py
+```
+
+## 📦 專案結構
+
+```
+streamlit-oauth/
+├── streamlit_oauth/       # 主套件
+│   ├── __init__.py       # OAuth2Component + PayPalComponent
+│   └── frontend/         # 前端組件（React + TypeScript）
+├── examples/             # 範例應用
+│   ├── paypal_basic.py   # PayPal 基本範例
+│   └── google.py         # OAuth 範例
+├── tests/                # 測試檔案
+├── docs/                 # 文檔
+└── requirements.txt      # 依賴管理
+```
+
+## 🔒 安全特性
+
+| 特性 | PayPal | OAuth2 |
+|------|--------|--------|
+| Client Secret 保護 | ✅ | ✅ |
+| CSRF 防護 | ✅ | ✅ |
+| 時效性控制 | ✅ (5分鐘) | ✅ |
+| 跨域保護 | ✅ | ✅ |
+| 重放攻擊防護 | ✅ | ✅ |
+
+## 🛠️ 開發
+
+### 設定開發環境
+
+```bash
+# 安裝開發依賴
+pip install -r requirements-dev.txt
+
+# 以開發模式安裝
+pip install -e .
+
+# 執行測試
+python test_paypal_component.py
+
+# 代碼格式化
+black streamlit_oauth/
+```
+
+### 前端開發
+
+```bash
+cd streamlit_oauth/frontend
+npm install
+npm run dev  # 啟動 Vite 開發伺服器
+```
+
+## 📊 技術決策
+
+### 為什麼使用 Popup 模式？
+
+1. **避免 URL 參數複雜性**：直接回傳 Python dict
+2. **更好的用戶體驗**：獨立視窗更專業
+3. **狀態管理簡單**：自動整合 Streamlit session state
+
+### 為什麼保留 OAuth 架構？
+
+- Popup 機制適用於多種場景（認證、付款等）
+- 可擴展支援其他服務
+- 代碼重用性高
+
+## 🗺️ 未來規劃
+
+- [ ] 支援更多付款方式（Stripe、LINE Pay）
+- [ ] 訂閱付款功能
+- [ ] 退款 API
+- [ ] Webhook 整合
+- [ ] 發布到 PyPI
+
+## 🤝 貢獻
+
+歡迎提交 Issue 和 Pull Request！
+
+### 貢獻指南
+
+1. Fork 本專案
+2. 創建 feature 分支 (`git checkout -b feature/amazing-feature`)
+3. 提交變更 (`git commit -m 'feat: add amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 開啟 Pull Request
+
+## 📝 授權
+
+與原 [streamlit-oauth](https://github.com/dnplus/streamlit-oauth) 專案相同的授權條款。
+
+## 🙏 致謝
+
+- 原 **streamlit-oauth** 專案由 [Dylan Lu](https://github.com/dnplus) 創建
+- PayPal 整合功能擴展與實作
+
+## 📧 聯絡
+
+- **Issues**: [GitHub Issues](../../issues)
+- **Discussions**: [GitHub Discussions](../../discussions)
+
+---
+
+**狀態：** 🟢 Active Development
+**最後更新：** 2025-10-01
+**版本：** 0.1.14

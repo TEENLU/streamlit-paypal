@@ -8,3 +8,5 @@ streamlit_oauth.egg-info/SOURCES.txt
 streamlit_oauth.egg-info/dependency_links.txt
 streamlit_oauth.egg-info/requires.txt
 streamlit_oauth.egg-info/top_level.txt
+tests/test_internal.py
+tests/test_oauth_component.py
