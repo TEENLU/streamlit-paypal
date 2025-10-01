@@ -22,7 +22,7 @@ setuptools.setup(
         # If your component has other Python dependencies, list
         # them here.
         "streamlit>=1.28.1",
-        "httpx-oauth==0.15.1",
+        "requests>=2.31.0",
         "python-dotenv==1.0.1"
     ],
 )

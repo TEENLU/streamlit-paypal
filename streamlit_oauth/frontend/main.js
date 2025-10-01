@@ -21,12 +21,23 @@ button.onclick = async () => {
         let popup_url = (new URL(popup.location.href)).toString()
         let urlParams = new URLSearchParams(popup.location.search)
 
-        // if popup url not redirect_uri, wait for redirect to complete 
-        if (!popup_url.startsWith(redirect_uri)) {
+        // Support both OAuth (redirect_uri) and direct PayPal callback
+        let shouldCapture = false
+
+        if (redirect_uri) {
+          // OAuth flow: check if redirected to redirect_uri
+          shouldCapture = popup_url.startsWith(redirect_uri)
+        } else {
+          // PayPal flow: check for token parameter (order approval)
+          // PayPal callback URL format: https://domain/path?token=XXX&PayerID=YYY
+          shouldCapture = urlParams.has('token') && urlParams.has('PayerID')
+        }
+
+        if (!shouldCapture) {
           return
         }
 
-        // if popup url is redirect_uri, close popup and return query string
+        // Close popup and return query string parameters
         popup.close()
         clearInterval(interval)
         let result = {}
@@ -36,15 +47,15 @@ button.onclick = async () => {
 
         return resolve(result)
       } catch (e) {
-        if (e.name === "SecurityError") { 
+        if (e.name === "SecurityError") {
           // ignore cross-site orign, wait for redirect to complete
-          return 
+          return
         }
         return reject(e)
       }
     }, 1000)
   })
-  // send code to streamlit
+  // send result to streamlit
   Streamlit.setComponentValue(qs)
 }
 
