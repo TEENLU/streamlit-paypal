@@ -51,7 +51,8 @@ if 'payment' not in st.session_state:
         name="支付 $10 USD",
         amount=10.00,
         currency='USD',
-        description='購買商品'
+        description='購買商品',
+        return_url='https://yourapp.streamlit.app'  # Required!
     )
 
     if result:
@@ -60,6 +61,10 @@ if 'payment' not in st.session_state:
 else:
     st.success(f"付款成功！訂單 ID: {st.session_state.payment['order_id']}")
 ```
+
+> **⚠️ 生產環境注意**：此組件基於 Streamlit session state，適合即時互動場景。
+> 若需可靠的訂單處理（避免網路中斷、瀏覽器關閉等問題），請額外設定 **PayPal Webhooks**
+> 在後端接收付款通知並持久化訂單狀態。
 
 ### OAuth2 認證範例
 
@@ -191,8 +196,29 @@ npm run dev  # 啟動 Vite 開發伺服器
 - [ ] 支援更多付款方式（Stripe、LINE Pay）
 - [ ] 訂閱付款功能
 - [ ] 退款 API
-- [ ] Webhook 整合
+- [ ] Webhook 整合範例（生產環境必備）
 - [ ] 發布到 PyPI
+
+### 關於 Webhook
+
+本套件提供 **前端互動層**，適合即時付款體驗。
+**生產環境建議架構**：
+
+```
+Streamlit App (此套件)     →  即時 UI、付款按鈕、用戶體驗
+      ↓
+PayPal Orders API          →  創建訂單、Popup 付款
+      ↓
+你的後端 + Webhook         →  接收 PAYMENT.CAPTURE.COMPLETED
+                              持久化訂單、發貨、授權等
+```
+
+**為何需要 Webhook？**
+- ✅ 可靠性：即使用戶關閉瀏覽器也能處理
+- ✅ 安全性：Server-to-Server 驗證
+- ✅ 完整性：接收所有付款事件（成功、失敗、退款等）
+
+參考：[PayPal Webhooks 文檔](https://developer.paypal.com/docs/api-basics/notifications/webhooks/)
 
 ## 🤝 貢獻
 
