@@ -98,7 +98,9 @@ class PayPalComponent:
     """
     access_token = self._get_access_token()
 
-    # Build order request
+    # Build order request with return URL for popup flow
+    # Note: return_url is needed for PayPal to redirect back with payment params
+    # It doesn't need to be a real endpoint - popup closes before actual redirect
     order_request = {
       'intent': 'CAPTURE',
       'purchase_units': [{
@@ -107,7 +109,15 @@ class PayPalComponent:
           'value': f'{amount:.2f}'
         },
         'description': description
-      }]
+      }],
+      'payment_source': {
+        'paypal': {
+          'experience_context': {
+            'return_url': 'https://example.com/payment/return',
+            'cancel_url': 'https://example.com/payment/cancel'
+          }
+        }
+      }
     }
 
     try:
