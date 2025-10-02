@@ -451,17 +451,19 @@ install_requires=[
 
 ## ✅ 執行檢查清單
 
-### Phase 1: 移除 OAuth2 代碼
-- [ ] 移除 OAuth2 imports (`httpx_oauth`)
-- [ ] 移除 OAuth2 輔助函數 (`_generate_state`, `_generate_pkce_pair`)
-- [ ] 移除 OAuth2Component 類別（完整）
-- [ ] 移除 StreamlitOauthError（保留 PayPalError）
-- [ ] 移除開發測試代碼（OAuth2 部分）
-- [ ] 簡化前端邏輯（移除 `redirect_uri` 檢測）
-- [ ] **移除 `redirect_uri` 參數**（從 `PayPalComponent.payment_button()` 方法）
-- [ ] **移除 `return_url` / `cancel_url` 設定**（從 `_create_order()` 方法）
-- [ ] 移除 OAuth 範例文件（8 個）
-- [ ] 移除 `httpx-oauth` 依賴
+### Phase 1: 移除 OAuth2 代碼 ✅ (完成於 commit 5ef783e)
+- [x] 移除 OAuth2 imports (`httpx_oauth`)
+- [x] 移除 OAuth2 輔助函數 (`_generate_state`, `_generate_pkce_pair`)
+- [x] 移除 OAuth2Component 類別（完整）
+- [x] 移除 StreamlitOauthError（保留 PayPalError）
+- [x] 移除開發測試代碼（OAuth2 部分）
+- [x] 簡化前端邏輯（移除 `redirect_uri` 檢測）
+- [x] **移除 `redirect_uri` 參數**（從 `PayPalComponent.payment_button()` 方法）
+- [x] **移除 `return_url` / `cancel_url` 設定**（從 `_create_order()` 方法）
+- [x] 移除 OAuth 範例文件（8 個）
+- [x] 移除 `httpx-oauth` 依賴
+
+**成果：** 移除 692 行程式碼，所有測試通過 ✅
 
 ### Phase 2: 套件重新命名
 - [ ] 重新命名目錄：`streamlit_oauth/` → `streamlit_paypal/`
@@ -505,6 +507,6 @@ install_requires=[
 
 ---
 
-**文件版本：** v1.2
+**文件版本：** v1.3
 **最後更新：** 2025-10-02
-**狀態：** ✅ 已確認，準備執行
+**狀態：** 🚧 Phase 1 完成，進行中
