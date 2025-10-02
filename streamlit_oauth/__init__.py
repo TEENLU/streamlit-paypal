@@ -84,7 +84,7 @@ class PayPalComponent:
     except requests.exceptions.RequestException as e:
       raise PayPalError(f"Failed to get access token: {str(e)}")
 
-  def _create_order(self, amount: float, currency: str, description: str, return_url: str = None) -> Dict[str, Any]:
+  def _create_order(self, amount: float, currency: str, description: str, return_url: str) -> Dict[str, Any]:
     """
     Create PayPal order on backend (secure).
 
@@ -92,20 +92,21 @@ class PayPalComponent:
       amount: Payment amount
       currency: Currency code (e.g., 'USD', 'TWD')
       description: Payment description
-      return_url: Optional return URL (defaults to https://example.com/payment/return)
+      return_url: Return URL for PayPal redirect (required)
+                  After payment, PayPal redirects to this URL with token & PayerID params.
+                  For popup flow: frontend detects params and closes popup immediately.
+                  Use your app's URL (e.g., https://yourapp.streamlit.app)
 
     Returns:
       Order object with 'id' field
     """
+    if not return_url:
+      raise PayPalError("return_url is required. Provide your app's URL (e.g., https://yourapp.streamlit.app)")
+
     access_token = self._get_access_token()
 
-    # Use provided return_url or default
     # Note: PayPal requires return_url to redirect with payment params (token, PayerID)
     # For popup flow: frontend detects these params and closes popup immediately
-    # URL can be any valid URL - doesn't need to be a real endpoint
-    if not return_url:
-      return_url = 'https://example.com/payment/return'
-
     cancel_url = return_url  # Use same URL for cancel (distinguished by params)
 
     # Build order request with return URL for popup flow
@@ -208,9 +209,11 @@ class PayPalComponent:
       amount: Payment amount
       currency: Currency code (default: 'USD')
       description: Payment description
-      return_url: Return URL for PayPal redirect (optional, uses default if not provided)
-                  Can be any valid URL - popup closes before actual redirect completes.
-                  Example: Current app URL or https://example.com/payment/return
+      return_url: Return URL for PayPal redirect (required)
+                  After payment, PayPal redirects to this URL with token & PayerID params.
+                  For popup flow: frontend detects params and closes popup immediately.
+                  Use your app's URL (e.g., https://yourapp.streamlit.app)
+                  Note: Doesn't need to be a real endpoint - popup closes before redirect completes.
       key: Unique key for this button
       icon: Button icon (data URI or URL)
       use_container_width: Expand button to container width
@@ -223,6 +226,8 @@ class PayPalComponent:
         Reasons: 'user_cancelled' (cancelled on PayPal), 'user_closed' (closed popup), 'timeout' (>5min)
       - None if pending
     """
+    if not return_url:
+      raise PayPalError("return_url is required. Provide your app's URL (e.g., https://yourapp.streamlit.app)")
     # Create order on backend (secure)
     order = self._create_order(
       amount=amount,

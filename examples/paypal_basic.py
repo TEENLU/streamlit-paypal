@@ -10,11 +10,11 @@ Setup:
 3. Set environment variables or create a .env file:
    PAYPAL_CLIENT_ID=your_sandbox_client_id
    PAYPAL_CLIENT_SECRET=your_sandbox_client_secret
-   PAYPAL_RETURN_URL=your_app_url (optional, e.g., https://yourapp.streamlit.app)
+   PAYPAL_REDIRECT_URI=your_app_url (required, e.g., https://yourapp.streamlit.app)
 
 Note: For production, use 'production' mode and Live credentials.
-Note: return_url is optional - defaults to https://example.com/payment/return
-      For best UX, provide your actual app URL (popup closes before redirect completes)
+Note: PAYPAL_REDIRECT_URI is required - use your app's URL
+      PayPal needs this to redirect back with payment params (popup closes immediately)
 """
 
 import streamlit as st
@@ -34,10 +34,10 @@ st.markdown("---")
 # Get credentials from environment
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
-PAYPAL_RETURN_URL = os.getenv('PAYPAL_RETURN_URL')  # Optional: your app URL
+PAYPAL_REDIRECT_URI = os.getenv('PAYPAL_REDIRECT_URI')  # Required: your app URL
 
-if not all([PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET]):
-    st.error("❌ Missing PayPal credentials. Please set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET in your .env file.")
+if not all([PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_REDIRECT_URI]):
+    st.error("❌ Missing PayPal credentials. Please set PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, and PAYPAL_REDIRECT_URI in your .env file.")
     st.info("""
     **Setup Instructions:**
     1. Go to https://developer.paypal.com/dashboard/applications
@@ -47,11 +47,15 @@ if not all([PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET]):
        ```
        PAYPAL_CLIENT_ID=your_client_id
        PAYPAL_CLIENT_SECRET=your_client_secret
-       PAYPAL_RETURN_URL=https://yourapp.streamlit.app  # Optional
+       PAYPAL_REDIRECT_URI=https://yourapp.streamlit.app
        ```
 
-    **Note:** return_url is optional. If not provided, uses default URL.
-    For best UX when deployed, provide your actual app URL.
+    **Important:** PAYPAL_REDIRECT_URI is required!
+    - Use your app's URL (e.g., https://yourapp.streamlit.app)
+    - For local testing: http://localhost:8501
+    - PayPal redirects to this URL with payment params
+    - Popup closes immediately (doesn't actually navigate to URL)
+    - No PayPal dashboard configuration needed (unlike OAuth)
     """)
     st.stop()
 
@@ -106,7 +110,7 @@ if 'payment' not in st.session_state:
                 amount=amount,
                 currency=currency,
                 description=description,
-                return_url=PAYPAL_RETURN_URL,  # Optional: uses default if None
+                return_url=PAYPAL_REDIRECT_URI,  # Required: your app URL
                 key='payment_btn',
                 use_container_width=True
                 # Note: icon parameter can cause path issues with emoji, omitted for now
