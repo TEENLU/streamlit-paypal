@@ -458,6 +458,8 @@ install_requires=[
 - [ ] 移除 StreamlitOauthError（保留 PayPalError）
 - [ ] 移除開發測試代碼（OAuth2 部分）
 - [ ] 簡化前端邏輯（移除 `redirect_uri` 檢測）
+- [ ] **移除 `redirect_uri` 參數**（從 `PayPalComponent.payment_button()` 方法）
+- [ ] **移除 `return_url` / `cancel_url` 設定**（從 `_create_order()` 方法）
 - [ ] 移除 OAuth 範例文件（8 個）
 - [ ] 移除 `httpx-oauth` 依賴
 
@@ -492,9 +494,17 @@ install_requires=[
 2. ✅ 重新命名套件為 `streamlit-paypal`
 3. ✅ 執行方式：A + C 組合
 4. ✅ 版本號：1.0.0（新套件）
+5. ✅ **移除 `redirect_uri` 參數**（PayPal popup 模式不需要）
+
+**重要發現：**
+
+- PayPal Orders API 的 `return_url` / `cancel_url` 在現代整合方式（popup/in-context）中是**可選的**
+- 即使提供也會被忽略，因為 popup 流程不需要重導向
+- PayPal 開發者儀表板也沒有設定 redirect URI 的地方
+- 這簡化了我們的實作，使用者不需要設定 `PAYPAL_REDIRECT_URI` 環境變數
 
 ---
 
-**文件版本：** v1.1
+**文件版本：** v1.2
 **最後更新：** 2025-10-02
 **狀態：** ✅ 已確認，準備執行
