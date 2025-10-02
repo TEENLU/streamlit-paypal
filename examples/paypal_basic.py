@@ -76,55 +76,67 @@ st.markdown("---")
 
 # Payment flow
 if 'payment' not in st.session_state:
-    st.info("👇 Click the button below to start the payment process")
+    # Display previous cancellation message if exists
+    if 'last_cancellation' in st.session_state:
+        cancellation = st.session_state.last_cancellation
+        reason_map = {
+            'user_cancelled': 'You cancelled the payment on PayPal',
+            'user_closed': 'Payment window was closed',
+            'timeout': 'Payment timed out (exceeded 5 minutes)'
+        }
+        reason = reason_map.get(cancellation['reason'], 'Payment was not completed')
+        st.warning(f"⚠️ {reason}")
 
-    try:
-        result = paypal.payment_button(
-            name=f"Pay ${amount} {currency}",
-            amount=amount,
-            currency=currency,
-            redirect_uri=PAYPAL_REDIRECT_URI,
-            description=description,
-            key='payment_btn',
-            use_container_width=True
-            # Note: icon parameter can cause path issues with emoji, omitted for now
-        )
+        # Show retry button
+        if st.button("🔄 Retry Payment", type="primary", key='retry_btn'):
+            # Clear cancellation state before retry
+            del st.session_state.last_cancellation
+            st.rerun()
+    else:
+        st.info("👇 Click the button below to start the payment process")
 
-        if result:
-            # Check for cancellation
-            if result.get('cancelled'):
-                # Display cancellation message
-                reason_map = {
-                    'user_cancelled': 'You cancelled the payment on PayPal',
-                    'user_closed': 'Payment window was closed',
-                    'timeout': 'Payment timed out (exceeded 5 minutes)'
-                }
-                reason = reason_map.get(result['reason'], 'Payment was not completed')
-                st.warning(f"⚠️ {reason}")
+    # Only show payment button if no pending cancellation message
+    if 'last_cancellation' not in st.session_state:
+        try:
+            result = paypal.payment_button(
+                name=f"Pay ${amount} {currency}",
+                amount=amount,
+                currency=currency,
+                redirect_uri=PAYPAL_REDIRECT_URI,
+                description=description,
+                key='payment_btn',
+                use_container_width=True
+                # Note: icon parameter can cause path issues with emoji, omitted for now
+            )
 
-                # Optional: Track cancellation for analytics
-                if 'cancelled_payments' not in st.session_state:
-                    st.session_state.cancelled_payments = []
-                st.session_state.cancelled_payments.append({
-                    'order_id': result.get('order_id'),
-                    'reason': result['reason'],
-                    'timestamp': time.time(),
-                    'amount': amount,
-                    'currency': currency
-                })
+            if result:
+                # Check for cancellation
+                if result.get('cancelled'):
+                    # Store cancellation in session state
+                    st.session_state.last_cancellation = {
+                        'order_id': result.get('order_id'),
+                        'reason': result['reason'],
+                        'timestamp': time.time(),
+                        'amount': amount,
+                        'currency': currency
+                    }
 
-                # Show retry button
-                if st.button("🔄 Retry Payment", type="primary"):
+                    # Optional: Track cancellation for analytics
+                    if 'cancelled_payments' not in st.session_state:
+                        st.session_state.cancelled_payments = []
+                    st.session_state.cancelled_payments.append(st.session_state.last_cancellation)
+
+                    # Rerun to show cancellation message
                     st.rerun()
-            else:
-                # Successful payment
-                st.session_state.payment = result
-                st.rerun()
+                else:
+                    # Successful payment
+                    st.session_state.payment = result
+                    st.rerun()
 
-    except PayPalError as e:
-        st.error(f"❌ Payment failed: {str(e)}")
-    except Exception as e:
-        st.error(f"❌ Unexpected error: {str(e)}")
+        except PayPalError as e:
+            st.error(f"❌ Payment failed: {str(e)}")
+        except Exception as e:
+            st.error(f"❌ Unexpected error: {str(e)}")
 
 else:
     # Payment successful
