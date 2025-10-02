@@ -11,7 +11,10 @@
       "Bash(git commit:*)",
       "Bash(git rev-list:*)",
       "mcp__sequential-thinking__sequentialthinking",
-      "Bash(python test_paypal_component.py:*)"
+      "Bash(python test_paypal_component.py:*)",
+      "Bash(tree:*)",
+      "Bash(git restore:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

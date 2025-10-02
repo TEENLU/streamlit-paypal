@@ -10,9 +10,11 @@ Setup:
 3. Set environment variables or create a .env file:
    PAYPAL_CLIENT_ID=your_sandbox_client_id
    PAYPAL_CLIENT_SECRET=your_sandbox_client_secret
+   PAYPAL_RETURN_URL=your_app_url (optional, e.g., https://yourapp.streamlit.app)
 
 Note: For production, use 'production' mode and Live credentials.
-Note: redirect_uri is not needed for popup-based payment flow.
+Note: return_url is optional - defaults to https://example.com/payment/return
+      For best UX, provide your actual app URL (popup closes before redirect completes)
 """
 
 import streamlit as st
@@ -32,6 +34,7 @@ st.markdown("---")
 # Get credentials from environment
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
+PAYPAL_RETURN_URL = os.getenv('PAYPAL_RETURN_URL')  # Optional: your app URL
 
 if not all([PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET]):
     st.error("❌ Missing PayPal credentials. Please set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET in your .env file.")
@@ -44,7 +47,11 @@ if not all([PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET]):
        ```
        PAYPAL_CLIENT_ID=your_client_id
        PAYPAL_CLIENT_SECRET=your_client_secret
+       PAYPAL_RETURN_URL=https://yourapp.streamlit.app  # Optional
        ```
+
+    **Note:** return_url is optional. If not provided, uses default URL.
+    For best UX when deployed, provide your actual app URL.
     """)
     st.stop()
 
@@ -99,6 +106,7 @@ if 'payment' not in st.session_state:
                 amount=amount,
                 currency=currency,
                 description=description,
+                return_url=PAYPAL_RETURN_URL,  # Optional: uses default if None
                 key='payment_btn',
                 use_container_width=True
                 # Note: icon parameter can cause path issues with emoji, omitted for now

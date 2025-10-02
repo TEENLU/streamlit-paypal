@@ -84,7 +84,7 @@ class PayPalComponent:
     except requests.exceptions.RequestException as e:
       raise PayPalError(f"Failed to get access token: {str(e)}")
 
-  def _create_order(self, amount: float, currency: str, description: str) -> Dict[str, Any]:
+  def _create_order(self, amount: float, currency: str, description: str, return_url: str = None) -> Dict[str, Any]:
     """
     Create PayPal order on backend (secure).
 
@@ -92,15 +92,23 @@ class PayPalComponent:
       amount: Payment amount
       currency: Currency code (e.g., 'USD', 'TWD')
       description: Payment description
+      return_url: Optional return URL (defaults to https://example.com/payment/return)
 
     Returns:
       Order object with 'id' field
     """
     access_token = self._get_access_token()
 
+    # Use provided return_url or default
+    # Note: PayPal requires return_url to redirect with payment params (token, PayerID)
+    # For popup flow: frontend detects these params and closes popup immediately
+    # URL can be any valid URL - doesn't need to be a real endpoint
+    if not return_url:
+      return_url = 'https://example.com/payment/return'
+
+    cancel_url = return_url  # Use same URL for cancel (distinguished by params)
+
     # Build order request with return URL for popup flow
-    # Note: return_url is needed for PayPal to redirect back with payment params
-    # It doesn't need to be a real endpoint - popup closes before actual redirect
     order_request = {
       'intent': 'CAPTURE',
       'purchase_units': [{
@@ -113,8 +121,8 @@ class PayPalComponent:
       'payment_source': {
         'paypal': {
           'experience_context': {
-            'return_url': 'https://example.com/payment/return',
-            'cancel_url': 'https://example.com/payment/cancel'
+            'return_url': return_url,
+            'cancel_url': cancel_url
           }
         }
       }
@@ -185,6 +193,7 @@ class PayPalComponent:
     amount: float,
     currency: str = 'USD',
     description: str = '',
+    return_url: str = None,
     key: Optional[str] = None,
     icon: Optional[str] = None,
     use_container_width: bool = False,
@@ -199,6 +208,9 @@ class PayPalComponent:
       amount: Payment amount
       currency: Currency code (default: 'USD')
       description: Payment description
+      return_url: Return URL for PayPal redirect (optional, uses default if not provided)
+                  Can be any valid URL - popup closes before actual redirect completes.
+                  Example: Current app URL or https://example.com/payment/return
       key: Unique key for this button
       icon: Button icon (data URI or URL)
       use_container_width: Expand button to container width
@@ -212,11 +224,11 @@ class PayPalComponent:
       - None if pending
     """
     # Create order on backend (secure)
-    # Note: Popup mode doesn't require redirect URLs
     order = self._create_order(
       amount=amount,
       currency=currency,
-      description=description
+      description=description,
+      return_url=return_url
     )
 
     # Get approval URL from order links
