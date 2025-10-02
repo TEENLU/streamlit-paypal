@@ -15,22 +15,61 @@ button.onclick = async () => {
   popup.focus()
   // check for popup close
   let qs = await new Promise((resolve, reject) => {
+    let timeoutId = null
+
+    // Set 5-minute timeout for PayPal flow (matches backend expiration)
+    let redirect_uri = new URLSearchParams(authorization_url).get("redirect_uri")
+    if (!redirect_uri) {  // PayPal flow only
+      timeoutId = setTimeout(() => {
+        if (!popup.closed) {
+          popup.close()
+        }
+        clearInterval(interval)
+        resolve({cancelled: true, reason: 'timeout'})
+      }, 300000)  // 5 minutes
+    }
+
     const interval = setInterval(() => {
       try {
+        // Detect popup manually closed
+        if (popup.closed) {
+          clearInterval(interval)
+          if (timeoutId) clearTimeout(timeoutId)
+          return resolve({cancelled: true, reason: 'user_closed'})
+        }
+
         let redirect_uri = new URLSearchParams(authorization_url).get("redirect_uri")
         let popup_url = (new URL(popup.location.href)).toString()
         let urlParams = new URLSearchParams(popup.location.search)
 
         // Support both OAuth (redirect_uri) and direct PayPal callback
         let shouldCapture = false
+        let isCancelled = false
 
         if (redirect_uri) {
           // OAuth flow: check if redirected to redirect_uri
           shouldCapture = popup_url.startsWith(redirect_uri)
         } else {
-          // PayPal flow: check for token parameter (order approval)
-          // PayPal callback URL format: https://domain/path?token=XXX&PayerID=YYY
-          shouldCapture = urlParams.has('token') && urlParams.has('PayerID')
+          // PayPal flow
+          if (urlParams.has('token') && urlParams.has('PayerID')) {
+            // Payment completed successfully
+            shouldCapture = true
+          } else if (urlParams.has('token') && !urlParams.has('PayerID')) {
+            // User cancelled on PayPal page (cancel URL callback)
+            isCancelled = true
+          }
+        }
+
+        // Handle cancellation
+        if (isCancelled) {
+          popup.close()
+          clearInterval(interval)
+          if (timeoutId) clearTimeout(timeoutId)
+          return resolve({
+            cancelled: true,
+            reason: 'user_cancelled',
+            token: urlParams.get('token')  // Include order ID for cleanup
+          })
         }
 
         if (!shouldCapture) {
@@ -40,6 +79,7 @@ button.onclick = async () => {
         // Close popup and return query string parameters
         popup.close()
         clearInterval(interval)
+        if (timeoutId) clearTimeout(timeoutId)
         let result = {}
         for(let pairs of urlParams.entries()) {
           result[pairs[0]] = pairs[1]

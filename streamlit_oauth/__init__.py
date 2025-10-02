@@ -357,7 +357,10 @@ class PayPalComponent:
       popup_width: Popup window width
 
     Returns:
-      Payment result dict if successful, None if pending
+      - Payment result dict if successful
+      - Cancellation dict if cancelled: {'cancelled': True, 'reason': str, 'order_id': str}
+        Reasons: 'user_cancelled' (cancelled on PayPal), 'user_closed' (closed popup), 'timeout' (>5min)
+      - None if pending
     """
     # Create order on backend (secure)
     # Note: redirect_uri is optional for PayPal (unlike OAuth)
@@ -396,11 +399,25 @@ class PayPalComponent:
     # Process result from popup
     if result:
       try:
+        # Check for cancellation
+        if result.get('cancelled'):
+          # Clean up cancelled order
+          order_id = result.get('token')
+          if order_id and order_id in st.session_state.paypal_pending_orders:
+            del st.session_state.paypal_pending_orders[order_id]
+
+          # Return cancellation info
+          return {
+            'cancelled': True,
+            'reason': result.get('reason', 'unknown'),
+            'order_id': order_id
+          }
+
         if 'error' in result:
           raise PayPalError(result)
 
         # PayPal returns 'token' (order ID) in callback
-        if 'token' in result:
+        if 'token' in result and 'PayerID' in result:
           order_id = result['token']
 
           # Capture the order on backend (secure)

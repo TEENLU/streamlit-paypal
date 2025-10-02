@@ -18,6 +18,7 @@ Note: For production, use 'production' mode and Live credentials.
 import streamlit as st
 from streamlit_oauth import PayPalComponent, PayPalError
 import os
+import time
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -90,8 +91,35 @@ if 'payment' not in st.session_state:
         )
 
         if result:
-            st.session_state.payment = result
-            st.rerun()
+            # Check for cancellation
+            if result.get('cancelled'):
+                # Display cancellation message
+                reason_map = {
+                    'user_cancelled': 'You cancelled the payment on PayPal',
+                    'user_closed': 'Payment window was closed',
+                    'timeout': 'Payment timed out (exceeded 5 minutes)'
+                }
+                reason = reason_map.get(result['reason'], 'Payment was not completed')
+                st.warning(f"⚠️ {reason}")
+
+                # Optional: Track cancellation for analytics
+                if 'cancelled_payments' not in st.session_state:
+                    st.session_state.cancelled_payments = []
+                st.session_state.cancelled_payments.append({
+                    'order_id': result.get('order_id'),
+                    'reason': result['reason'],
+                    'timestamp': time.time(),
+                    'amount': amount,
+                    'currency': currency
+                })
+
+                # Show retry button
+                if st.button("🔄 Retry Payment", type="primary"):
+                    st.rerun()
+            else:
+                # Successful payment
+                st.session_state.payment = result
+                st.rerun()
 
     except PayPalError as e:
         st.error(f"❌ Payment failed: {str(e)}")

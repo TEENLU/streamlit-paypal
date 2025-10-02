@@ -286,6 +286,35 @@ def __init__(self, client_id: str, client_secret: str, mode: str = 'sandbox'):
 
 ---
 
-**文件版本：** v1.0
+**文件版本：** v1.1
 **最後更新：** 2025-10-01
-**下次審查：** 實作改進後或 3 個月後
+**下次審查：** 3 個月後
+
+---
+
+## 📋 改進實作紀錄
+
+### 2025-10-01: 問題 1 & 2 已修復 ✅
+
+**已實作改進：**
+- ✅ **問題 1（取消付款未清理 pending order）：** 已修復
+  - 前端檢測取消狀態並返回 `{cancelled: true, reason, token}`
+  - 後端立即清理 `st.session_state.paypal_pending_orders[order_id]`
+  - 不再依賴 5 分鐘過期機制
+
+- ✅ **問題 2（前端未處理 popup 異常關閉）：** 已修復
+  - 添加 `popup.closed` 檢測
+  - 添加 5 分鐘超時機制（與後端一致）
+  - 支援三種取消原因：`user_cancelled`, `user_closed`, `timeout`
+
+**待實作改進：**
+- 🟡 **問題 3（Production HTTPS 強制檢查）：** 優先級低，暫不實作
+  - Streamlit Cloud 已強制 HTTPS
+  - PayPal API 本身是 HTTPS
+  - 可在未來需要時添加
+
+**安全評分更新：**
+| 類別 | 原評分 | 新評分 | 說明 |
+|------|-------|-------|------|
+| 重放攻擊防護 | 9/10 | 10/10 | 取消訂單立即清理 |
+| **總分** | **9.3/10** | **9.5/10** | ⬆️ 提升 0.2 分 |

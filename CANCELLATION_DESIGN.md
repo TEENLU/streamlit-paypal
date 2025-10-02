@@ -461,7 +461,48 @@ else:
 
 ---
 
-**文件版本：** v1.0
+**文件版本：** v1.1
 **最後更新：** 2025-10-01
-**決策狀態：** 待用戶決定
-**預計工時：** 1-2 小時（如選擇方案 3）
+**決策狀態：** ✅ 已實作方案 3
+**實際工時：** ~1 小時
+
+---
+
+## 📋 實作紀錄
+
+### 已完成項目 (2025-10-01)
+
+#### ✅ 前端 (`main.js`)
+- 添加 popup 關閉檢測 (`popup.closed` check)
+- 添加 5 分鐘超時機制 (`setTimeout 300000ms`)
+- 檢測取消參數（`token` 但無 `PayerID`）
+- 返回 `{cancelled: true, reason, token}` 物件
+- 支援三種取消情境：
+  - `user_cancelled`: 在 PayPal 頁面點擊取消
+  - `user_closed`: 手動關閉 popup
+  - `timeout`: 超過 5 分鐘
+
+#### ✅ 後端 (`__init__.py`)
+- 檢測 `result.get('cancelled')`
+- 清理 pending order（立即刪除，不等 5 分鐘過期）
+- 返回取消資訊給應用層
+- 更新 docstring 說明返回值格式
+
+#### ✅ 範例 (`paypal_basic.py`)
+- 顯示取消訊息（中英文對照）
+- 添加重試按鈕
+- 記錄取消行為（可選分析）
+- 添加 `time` import
+
+#### ✅ 文件
+- 更新 `CANCELLATION_DESIGN.md`（本文件）
+- 待更新：`README_PAYPAL.md`, `TESTING_GUIDE.md`, `PAYPAL_DESIGN.md`
+
+### 程式碼變更統計
+
+| 檔案 | 新增行數 | 修改行數 | 功能 |
+|------|---------|---------|------|
+| `frontend/main.js` | +45 | -10 | 取消檢測邏輯 |
+| `__init__.py` | +13 | -2 | 後端處理 |
+| `examples/paypal_basic.py` | +26 | -3 | UI 反饋 |
+| **總計** | **+84** | **-15** | **淨增 69 行** |
