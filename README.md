@@ -85,11 +85,23 @@ result = oauth2.authorize_button(
 
 ## 📚 文檔
 
-- **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - 專案總覽與結構
-- **[PAYPAL_DESIGN.md](PAYPAL_DESIGN.md)** - PayPal 整合設計文檔
-- **[README_PAYPAL.md](README_PAYPAL.md)** - PayPal 完整使用指南
-- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - 測試指南
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - 實作總結
+**完整文檔索引請見 [docs/README.md](docs/README.md)**
+
+### 快速導航
+
+**新手入門：**
+- 📖 [用戶指南](docs/guides/user-guide.md) - 完整的 PayPal 整合使用指南
+- 🧪 [測試指南](docs/guides/testing-guide.md) - 如何測試 PayPal 功能
+
+**開發者：**
+- 📐 [PayPal 整合設計](docs/design/paypal-integration.md) - 技術決策與架構
+- 🔒 [安全審查](docs/design/security-audit.md) - 安全性分析報告（9.5/10）
+- 🎯 [取消處理設計](docs/design/cancellation-handling.md) - 付款取消功能設計
+
+**專案報告：**
+- ✅ [實作總結](docs/reports/implementation.md) - v1.1 功能實作詳情
+- 📊 [測試報告](docs/reports/test-report.md) - 完整測試結果（4/4 通過）
+- 📈 [專案狀態](docs/reports/project-status.md) - 開發進度與統計
 
 ## 🧪 測試
 
