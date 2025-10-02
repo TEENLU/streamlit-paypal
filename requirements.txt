@@ -1,7 +1,6 @@
 # Core dependencies
 streamlit==1.48
-httpx-oauth==0.15.1  # For original OAuth2Component
-requests>=2.31.0     # For PayPalComponent
+requests>=2.31.0     # For PayPal API integration
 python-dotenv==1.0.1
 
 # Development dependencies (optional)
