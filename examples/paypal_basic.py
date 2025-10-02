@@ -10,9 +10,9 @@ Setup:
 3. Set environment variables or create a .env file:
    PAYPAL_CLIENT_ID=your_sandbox_client_id
    PAYPAL_CLIENT_SECRET=your_sandbox_client_secret
-   PAYPAL_REDIRECT_URI=https://your-app.streamlit.app/component/streamlit_oauth.authorize_button
 
 Note: For production, use 'production' mode and Live credentials.
+Note: redirect_uri is not needed for popup-based payment flow.
 """
 
 import streamlit as st
@@ -32,9 +32,6 @@ st.markdown("---")
 # Get credentials from environment
 PAYPAL_CLIENT_ID = os.getenv('PAYPAL_CLIENT_ID')
 PAYPAL_CLIENT_SECRET = os.getenv('PAYPAL_CLIENT_SECRET')
-# Redirect URI: Optional - where to redirect after payment
-# If not set, PayPal uses the approval URL from order response
-PAYPAL_REDIRECT_URI = os.getenv('PAYPAL_REDIRECT_URI', None)
 
 if not all([PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET]):
     st.error("❌ Missing PayPal credentials. Please set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET in your .env file.")
@@ -47,7 +44,6 @@ if not all([PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET]):
        ```
        PAYPAL_CLIENT_ID=your_client_id
        PAYPAL_CLIENT_SECRET=your_client_secret
-       PAYPAL_REDIRECT_URI=https://your-domain/component/streamlit_oauth.authorize_button
        ```
     """)
     st.stop()
@@ -102,7 +98,6 @@ if 'payment' not in st.session_state:
                 name=f"Pay ${amount} {currency}",
                 amount=amount,
                 currency=currency,
-                redirect_uri=PAYPAL_REDIRECT_URI,
                 description=description,
                 key='payment_btn',
                 use_container_width=True
