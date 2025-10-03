@@ -1,37 +1,50 @@
-# 💳 Streamlit OAuth + PayPal Integration
+# 💳 Streamlit PayPal
 
 [![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Streamlit](https://img.shields.io/badge/streamlit-1.28+-red.svg)](https://streamlit.io)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**安全、優雅的 Streamlit 付款與認證組件**
+**安全、優雅的 Streamlit PayPal 付款組件**
 
-這個專案是從 [streamlit-oauth](https://github.com/dnplus/streamlit-oauth) fork 並擴展，新增了完整的 PayPal 付款支援，同時保留原有的 OAuth2 認證功能。
+輕鬆整合 PayPal 付款到你的 Streamlit 應用。
+
+> 本專案 fork 自 [streamlit-oauth](https://github.com/dnplus/streamlit-oauth)，專注於 PayPal 付款整合。
 
 ## ✨ 特色
 
-### 💳 PayPal 付款支援（新功能）
-- 🔒 **安全優先**：Client Secret 只在後端使用
-- 🪟 **Popup 結帳**：專業的彈窗付款體驗
+- 🔒 **安全優先**：Client Secret 只在後端使用，前端零洩漏風險
+- 🪟 **Popup 結帳**：專業的彈窗付款體驗，不中斷應用流程
 - ✅ **自動捕獲**：付款完成後自動捕獲訂單
-- 🛡️ **CSRF 防護**：內建安全機制
-- 🌍 **多幣別**：支援 USD、EUR、GBP、TWD 等
+- 🛡️ **CSRF 防護**：內建訂單驗證與超時機制
+- 🌍 **多幣別支援**：USD、EUR、GBP、TWD、JPY 等
 - 🧪 **Sandbox 就緒**：輕鬆使用 PayPal 測試環境
-
-### 🔐 OAuth2 認證（原功能保留）
-- 支援多種 OAuth 提供商（Google、GitHub、Discord 等）
-- PKCE 支援
-- Token 刷新與撤銷
+- 🎯 **取消處理**：完整的付款取消與錯誤處理
 
 ## 🚀 快速開始
 
-### 安裝
+### 1. 安裝套件
 
 ```bash
 pip install -e .
 ```
 
-### PayPal 付款範例
+### 2. 設定環境變數
+
+建立 `.env` 檔案：
+
+```bash
+PAYPAL_CLIENT_ID=你的_Client_ID
+PAYPAL_CLIENT_SECRET=你的_Client_Secret
+```
+
+### 3. 執行範例
+
+```bash
+# 基礎範例
+streamlit run examples/paypal_basic.py
+```
+
+### 4. 程式碼範例
 
 ```python
 import streamlit as st
@@ -66,76 +79,60 @@ else:
 > 若需可靠的訂單處理（避免網路中斷、瀏覽器關閉等問題），請額外設定 **PayPal Webhooks**
 > 在後端接收付款通知並持久化訂單狀態。
 
-### OAuth2 認證範例
+## 📚 API 文檔
+
+### PayPalComponent
 
 ```python
-import streamlit as st
-from streamlit_paypal import OAuth2Component
-
-# 初始化 OAuth2 組件
-oauth2 = OAuth2Component(
-    client_id='your_client_id',
-    client_secret='your_client_secret',
-    authorize_endpoint='https://accounts.google.com/o/oauth2/auth',
-    token_endpoint='https://oauth2.googleapis.com/token'
+paypal = PayPalComponent(
+    client_id: str,           # PayPal Client ID
+    client_secret: str,       # PayPal Client Secret
+    mode: str = 'sandbox'     # 'sandbox' 或 'live'
 )
 
-# 創建登入按鈕
-result = oauth2.authorize_button(
-    name="Login with Google",
-    redirect_uri='https://your-app/component/streamlit_oauth.authorize_button',
-    scope='openid email'
+result = paypal.payment_button(
+    name: str,                # 按鈕文字
+    amount: float,            # 金額
+    currency: str,            # 幣別 (USD, TWD, EUR...)
+    description: str,         # 訂單描述
+    return_url: str           # 付款後返回 URL (必填)
 )
 ```
 
-## 📚 文檔
+### 回傳值
 
-**完整文檔索引請見 [docs/README.md](docs/README.md)**
+付款成功時回傳 dict：
 
-### 快速導航
-
-**新手入門：**
-- 📖 [用戶指南](docs/guides/user-guide.md) - 完整的 PayPal 整合使用指南
-- 🧪 [測試指南](docs/guides/testing-guide.md) - 如何測試 PayPal 功能
-
-**開發者：**
-- 📐 [PayPal 整合設計](docs/design/paypal-integration.md) - 技術決策與架構
-- 🔒 [安全審查](docs/design/security-audit.md) - 安全性分析報告（9.5/10）
-- 🎯 [取消處理設計](docs/design/cancellation-handling.md) - 付款取消功能設計
-
-**專案報告：**
-- ✅ [實作總結](docs/reports/implementation.md) - v1.1 功能實作詳情
-- 📊 [測試報告](docs/reports/test-report.md) - 完整測試結果（4/4 通過）
-- 📈 [專案狀態](docs/reports/project-status.md) - 開發進度與統計
+```python
+{
+    'order_id': 'xxx',        # PayPal 訂單 ID
+    'status': 'COMPLETED',    # 訂單狀態
+    'payer_email': 'xxx',     # 付款者 email
+    'amount': '10.00',        # 金額
+    'currency': 'USD'         # 幣別
+}
+```
 
 ## 🧪 測試
 
-### 快速測試（一鍵完成）
-
 ```bash
-./quick_test.sh
-```
-
-### 手動測試
-
-```bash
-# 1. 單元測試
+# 單元測試
 python test_paypal_component.py
 
-# 2. 啟動範例應用
-streamlit run examples/paypal_basic.py
+# 啟動範例測試
+streamlit run examples/basic_payment.py
 ```
 
 ## 📦 專案結構
 
 ```
-streamlit-oauth/
-├── streamlit_oauth/       # 主套件
-│   ├── __init__.py       # OAuth2Component + PayPalComponent
+streamlit-paypal/
+├── streamlit_paypal/      # 主套件
+│   ├── __init__.py       # PayPalComponent
 │   └── frontend/         # 前端組件（React + TypeScript）
 ├── examples/             # 範例應用
-│   ├── paypal_basic.py   # PayPal 基本範例
-│   └── google.py         # OAuth 範例
+│   ├── basic_payment.py  # 基礎付款範例
+│   └── complete_example.py  # 完整範例
 ├── tests/                # 測試檔案
 ├── docs/                 # 文檔
 └── requirements.txt      # 依賴管理
@@ -143,53 +140,41 @@ streamlit-oauth/
 
 ## 🔒 安全特性
 
-| 特性 | PayPal | OAuth2 |
-|------|--------|--------|
-| Client Secret 保護 | ✅ | ✅ |
-| CSRF 防護 | ✅ | ✅ |
-| 時效性控制 | ✅ (5分鐘) | ✅ |
-| 跨域保護 | ✅ | ✅ |
-| 重放攻擊防護 | ✅ | ✅ |
+| 特性 | 說明 |
+|------|------|
+| Client Secret 保護 | ✅ Secret 只在後端使用，前端零洩漏 |
+| CSRF 防護 | ✅ 訂單 ID 驗證機制 |
+| 時效性控制 | ✅ 5分鐘超時自動取消 |
+| 訂單驗證 | ✅ 只能 capture 自己創建的訂單 |
+| 重放攻擊防護 | ✅ 訂單狀態追蹤 |
 
 ## 🛠️ 開發
 
-### 設定開發環境
-
 ```bash
 # 安裝開發依賴
-pip install -r requirements-dev.txt
-
-# 以開發模式安裝
 pip install -e .
 
 # 執行測試
 python test_paypal_component.py
 
-# 代碼格式化
-black streamlit_oauth/
-```
-
-### 前端開發
-
-```bash
-cd streamlit_oauth/frontend
+# 前端開發
+cd streamlit_paypal/frontend
 npm install
-npm run dev  # 啟動 Vite 開發伺服器
+npm run dev
 ```
 
 ## 📊 技術決策
 
 ### 為什麼使用 Popup 模式？
 
-1. **避免 URL 參數複雜性**：直接回傳 Python dict
-2. **更好的用戶體驗**：獨立視窗更專業
+1. **避免 URL 參數複雜性**：直接回傳 Python dict，無需處理 callback URL
+2. **更好的用戶體驗**：獨立視窗更專業，不中斷主應用流程
 3. **狀態管理簡單**：自動整合 Streamlit session state
+4. **安全性更高**：減少 URL 參數洩漏風險
 
-### 為什麼保留 OAuth 架構？
+## 🙏 致謝
 
-- Popup 機制適用於多種場景（認證、付款等）
-- 可擴展支援其他服務
-- 代碼重用性高
+本專案 fork 自 [dnplus/streamlit-oauth](https://github.com/dnplus/streamlit-oauth)，感謝原作者提供的優秀 Popup 機制架構。
 
 ## 🗺️ 未來規劃
 
@@ -220,34 +205,15 @@ PayPal Orders API          →  創建訂單、Popup 付款
 
 參考：[PayPal Webhooks 文檔](https://developer.paypal.com/docs/api-basics/notifications/webhooks/)
 
-## 🤝 貢獻
+## 🙏 致謝
 
-歡迎提交 Issue 和 Pull Request！
-
-### 貢獻指南
-
-1. Fork 本專案
-2. 創建 feature 分支 (`git checkout -b feature/amazing-feature`)
-3. 提交變更 (`git commit -m 'feat: add amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 開啟 Pull Request
+本專案 fork 自 [dnplus/streamlit-oauth](https://github.com/dnplus/streamlit-oauth)，感謝原作者提供的優秀 Popup 機制架構。
 
 ## 📝 授權
 
-與原 [streamlit-oauth](https://github.com/dnplus/streamlit-oauth) 專案相同的授權條款。
-
-## 🙏 致謝
-
-- 原 **streamlit-oauth** 專案由 [Dylan Lu](https://github.com/dnplus) 創建
-- PayPal 整合功能擴展與實作
-
-## 📧 聯絡
-
-- **Issues**: [GitHub Issues](../../issues)
-- **Discussions**: [GitHub Discussions](../../discussions)
+MIT License
 
 ---
 
-**狀態：** 🟢 Active Development
-**最後更新：** 2025-10-01
 **版本：** 0.1.14
+**狀態：** 🟢 Active Development
