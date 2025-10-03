@@ -82,7 +82,7 @@ streamlit run examples/paypal_basic.py
 ### PayPalComponent
 
 ```python
-from streamlit_oauth import PayPalComponent
+from streamlit_paypal import PayPalComponent
 
 paypal = PayPalComponent(
     client_id='your_client_id',
@@ -107,7 +107,7 @@ result = paypal.payment_button(
 ### OAuth2Component（原功能保留）
 
 ```python
-from streamlit_oauth import OAuth2Component
+from streamlit_paypal import OAuth2Component
 
 oauth2 = OAuth2Component(
     client_id='your_client_id',

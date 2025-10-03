@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_oauth import _generate_state, _generate_pkce_pair
+from streamlit_paypal import _generate_state, _generate_pkce_pair
 import pytest
 
 

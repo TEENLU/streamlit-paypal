@@ -18,7 +18,7 @@ Note: PAYPAL_REDIRECT_URI is required - use your app's URL
 """
 
 import streamlit as st
-from streamlit_oauth import PayPalComponent, PayPalError
+from streamlit_paypal import PayPalComponent, PayPalError
 import os
 import time
 from dotenv import load_dotenv

@@ -45,7 +45,7 @@ echo ""
 # 步驟 2: 驗證導入
 echo "📋 步驟 2/3: 驗證套件導入..."
 echo "--------------------------------"
-python -c "from streamlit_oauth import PayPalComponent; print('✅ PayPalComponent 導入成功')" 2>&1 | grep "✅" || {
+python -c "from streamlit_paypal import PayPalComponent; print('✅ PayPalComponent 導入成功')" 2>&1 | grep "✅" || {
     echo "❌ 導入失敗"
     exit 1
 }

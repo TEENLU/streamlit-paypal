@@ -31,7 +31,7 @@ pip install streamlit-oauth
 
 ```python
 import streamlit as st
-from streamlit_oauth import PayPalComponent, PayPalError
+from streamlit_paypal import PayPalComponent, PayPalError
 import os
 
 # Initialize PayPal component

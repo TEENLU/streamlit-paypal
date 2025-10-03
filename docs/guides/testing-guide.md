@@ -126,7 +126,7 @@ python -m build
 pip install dist/streamlit_oauth-*.whl
 
 # 測試
-python -c "from streamlit_oauth import PayPalComponent; print('✅ Import successful')"
+python -c "from streamlit_paypal import PayPalComponent; print('✅ Import successful')"
 ```
 
 #### 3. 測試應用

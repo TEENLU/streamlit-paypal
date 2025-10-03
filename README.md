@@ -35,7 +35,7 @@ pip install -e .
 
 ```python
 import streamlit as st
-from streamlit_oauth import PayPalComponent
+from streamlit_paypal import PayPalComponent
 import os
 
 # 初始化 PayPal 組件
@@ -70,7 +70,7 @@ else:
 
 ```python
 import streamlit as st
-from streamlit_oauth import OAuth2Component
+from streamlit_paypal import OAuth2Component
 
 # 初始化 OAuth2 組件
 oauth2 = OAuth2Component(

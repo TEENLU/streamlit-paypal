@@ -13,7 +13,7 @@ import streamlit as st
 if 'session_state' not in dir(st):
     st.session_state = {}
 
-from streamlit_oauth import PayPalComponent, PayPalError
+from streamlit_paypal import PayPalComponent, PayPalError
 
 def test_component_initialization():
     """Test PayPalComponent initialization"""
@@ -111,7 +111,8 @@ def test_create_order():
             order = paypal._create_order(
                 amount=10.50,
                 currency='USD',
-                description='Test payment'
+                description='Test payment',
+                return_url='https://test.example.com'
             )
 
             assert order['id'] == 'ORDER123'

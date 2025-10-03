@@ -4,14 +4,14 @@ from pathlib import Path
 README = (Path(__file__).parent/"README.md").read_text(encoding="utf8")
 
 setuptools.setup(
-    name="streamlit-oauth",
+    name="streamlit-paypal",
     version="0.1.14",
-    author="Dylan Lu",
+    author="Dylan Lu (original), PayPal integration by contributors",
     author_email="dnplus@gmail.com",
-    description="Simple OAuth2 authorization code flow for Streamlit",
+    description="PayPal payment integration for Streamlit apps",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/dnplus/streamlit-oauth",
+    url="https://github.com/yourusername/streamlit-paypal",  # TODO: Update with actual repo
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[],
@@ -22,8 +22,7 @@ setuptools.setup(
         # If your component has other Python dependencies, list
         # them here.
         "streamlit>=1.28.1",
-        "httpx-oauth==0.15.1",  # For original OAuth2Component
-        "requests>=2.31.0",     # For PayPalComponent
+        "requests>=2.31.0",     # For PayPal API integration
         "python-dotenv==1.0.1"
     ],
 )

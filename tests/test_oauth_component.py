@@ -3,7 +3,7 @@ import streamlit as st
 import pytest
 from unittest.mock import AsyncMock
 
-from streamlit_oauth import OAuth2Component, OAuth2, StreamlitOauthError
+from streamlit_paypal import OAuth2Component, OAuth2, StreamlitOauthError
 
 
 def test_authorize_button_success(monkeypatch):
