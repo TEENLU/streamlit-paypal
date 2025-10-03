@@ -125,7 +125,6 @@ function onRender(event) {
     window.clicked = true
   }
 
-  console.log(`authorization_url: ${authorization_url}`)
   Streamlit.setFrameHeight()
 }
 
