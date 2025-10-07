@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "streamlit-paypal"
+version = "1.0.0"
+description = "PayPal payment integration for Streamlit apps"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "TEENLU", email = "ivanru372@gmail.com"}
+]
+keywords = ["streamlit", "paypal", "payment", "integration", "component"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: Streamlit",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Office/Business :: Financial",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "streamlit>=1.28.1",
+    "requests>=2.31.0",
+    "python-dotenv==1.0.1"
+]
+
+[project.urls]
+Homepage = "https://github.com/TEENLU/streamlit-paypal"
+Repository = "https://github.com/TEENLU/streamlit-paypal"
+"Bug Tracker" = "https://github.com/TEENLU/streamlit-paypal/issues"

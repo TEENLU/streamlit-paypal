@@ -4,58 +4,50 @@
 [![Streamlit](https://img.shields.io/badge/streamlit-1.28+-red.svg)](https://streamlit.io)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**安全、優雅的 Streamlit PayPal 付款組件**
+**Secure and elegant PayPal payment integration for Streamlit apps**
 
-輕鬆整合 PayPal 付款到你的 Streamlit 應用。
+Easily integrate PayPal payments into your Streamlit applications with a secure, popup-based payment flow.
 
-> 本專案 fork 自 [streamlit-oauth](https://github.com/dnplus/streamlit-oauth)，專注於 PayPal 付款整合。
+> This project is forked from [streamlit-oauth](https://github.com/dnplus/streamlit-oauth), focusing on PayPal payment integration.
 
-## 🚀 快速開始
+## 🚀 Quick Start
 
-### 1. 安裝套件
-
-```bash
-pip install -e .
-```
-
-### 2. 設定環境變數
-
-建立 `.env` 檔案：
+### Installation
 
 ```bash
-PAYPAL_CLIENT_ID=你的_Client_ID
-PAYPAL_CLIENT_SECRET=你的_Client_Secret
-PAYPAL_REDIRECT_URI=你要導回的URI
+pip install streamlit-paypal
 ```
 
-### 3. 執行範例
+### Basic Usage
+
+Create a `.env` file with your PayPal credentials:
 
 ```bash
-# 基礎範例
-streamlit run examples/paypal_basic.py
+PAYPAL_CLIENT_ID=your_client_id
+PAYPAL_CLIENT_SECRET=your_client_secret
 ```
 
-### 4. 程式碼範例
+Then use the component in your Streamlit app:
 
 ```python
 import streamlit as st
 from streamlit_paypal import PayPalComponent
 import os
 
-# 初始化 PayPal 組件
+# Initialize PayPal component
 paypal = PayPalComponent(
     client_id=os.getenv('PAYPAL_CLIENT_ID'),
     client_secret=os.getenv('PAYPAL_CLIENT_SECRET'),
-    mode='sandbox'  # 測試環境
+    mode='sandbox'  # Use 'live' for production
 )
 
-# 創建付款按鈕
+# Create payment button
 if 'payment' not in st.session_state:
     result = paypal.payment_button(
-        name="支付 $10 USD",
+        name="Pay $10 USD",
         amount=10.00,
         currency='USD',
-        description='購買商品',
+        description='Product Purchase',
         return_url='https://yourapp.streamlit.app'  # Required!
     )
 
@@ -63,14 +55,12 @@ if 'payment' not in st.session_state:
         st.session_state.payment = result
         st.rerun()
 else:
-    st.success(f"付款成功！訂單 ID: {st.session_state.payment['order_id']}")
+    st.success(f"Payment successful! Order ID: {st.session_state.payment['order_id']}")
 ```
 
-> **⚠️ 生產環境注意**：此組件基於 Streamlit session state，適合即時互動場景。
-> 若需可靠的訂單處理（避免網路中斷、瀏覽器關閉等問題），請額外設定 **PayPal Webhooks**
-> 在後端接收付款通知並持久化訂單狀態。
+> **⚠️ Production Notice**: This component uses Streamlit session state for immediate interaction. For reliable order processing in production (handling network interruptions, browser closures, etc.), configure **PayPal Webhooks** to receive payment notifications server-side and persist order states.
 
-## 📚 API 文檔
+## 📚 API Reference
 
 ### PayPalComponent
 
@@ -78,121 +68,112 @@ else:
 paypal = PayPalComponent(
     client_id: str,           # PayPal Client ID
     client_secret: str,       # PayPal Client Secret
-    mode: str = 'sandbox'     # 'sandbox' 或 'live'
+    mode: str = 'sandbox'     # 'sandbox' or 'live'
 )
 
 result = paypal.payment_button(
-    name: str,                # 按鈕文字
-    amount: float,            # 金額
-    currency: str,            # 幣別 (USD, TWD, EUR...)
-    description: str,         # 訂單描述
-    return_url: str           # 付款後返回 URL (必填)
+    name: str,                # Button text
+    amount: float,            # Payment amount
+    currency: str,            # Currency code (USD, EUR, TWD, etc.)
+    description: str,         # Order description
+    return_url: str           # Post-payment return URL (required)
 )
 ```
 
-### 回傳值
+### Return Value
 
-付款成功時回傳 dict：
+On successful payment, returns a dictionary:
 
 ```python
 {
-    'order_id': 'xxx',        # PayPal 訂單 ID
-    'status': 'COMPLETED',    # 訂單狀態
-    'payer_email': 'xxx',     # 付款者 email
-    'amount': '10.00',        # 金額
-    'currency': 'USD'         # 幣別
+    'order_id': 'xxx',        # PayPal Order ID
+    'status': 'COMPLETED',    # Order status
+    'payer_email': 'xxx',     # Payer's email
+    'amount': '10.00',        # Payment amount
+    'currency': 'USD'         # Currency code
 }
 ```
 
-## 🧪 測試
+## 🔒 Security Features
+
+| Feature | Description |
+|---------|-------------|
+| Client Secret Protection | ✅ Secret stays server-side, zero frontend exposure |
+| CSRF Protection | ✅ Order ID verification mechanism |
+| Timeout Control | ✅ 5-minute auto-cancellation |
+| Order Verification | ✅ Can only capture self-created orders |
+| Replay Attack Protection | ✅ Order state tracking |
+
+## 🛠️ Development
+
+### Setup
 
 ```bash
-# 單元測試
-python test_paypal_component.py
+# Clone repository
+git clone https://github.com/TEENLU/streamlit-paypal.git
+cd streamlit-paypal
 
-# 啟動範例測試
-streamlit run examples/basic_payment.py
-```
-
-## 📦 專案結構
-
-```
-streamlit-paypal/
-├── streamlit_paypal/      # 主套件
-│   ├── __init__.py       # PayPalComponent
-│   └── frontend/         # 前端組件（React + TypeScript）
-├── examples/             # 範例應用
-│   ├── basic_payment.py  # 基礎付款範例
-│   └── complete_example.py  # 完整範例
-├── tests/                # 測試檔案
-├── docs/                 # 文檔
-└── requirements.txt      # 依賴管理
-```
-
-## 🔒 安全特性
-
-| 特性 | 說明 |
-|------|------|
-| Client Secret 保護 | ✅ Secret 只在後端使用，前端零洩漏 |
-| CSRF 防護 | ✅ 訂單 ID 驗證機制 |
-| 時效性控制 | ✅ 5分鐘超時自動取消 |
-| 訂單驗證 | ✅ 只能 capture 自己創建的訂單 |
-| 重放攻擊防護 | ✅ 訂單狀態追蹤 |
-
-## 🛠️ 開發
-
-```bash
-# 安裝開發依賴
+# Install in development mode
 pip install -e .
 
-# 執行測試
-python test_paypal_component.py
+# Run example
+streamlit run examples/paypal_basic.py
+```
 
-# 前端開發
+### Frontend Development
+
+```bash
 cd streamlit_paypal/frontend
 npm install
 npm run dev
 ```
 
-## 📊 技術決策
+### Testing
 
-### 為什麼使用 Popup 模式？
-
-1. **避免 URL 參數複雜性**：直接回傳 Python dict，無需處理 callback URL
-2. **更好的用戶體驗**：獨立視窗更專業，不中斷主應用流程
-3. **狀態管理簡單**：自動整合 Streamlit session state
-4. **安全性更高**：減少 URL 參數洩漏風險
-
-## 🙏 致謝
-
-本專案 fork 自 [dnplus/streamlit-oauth](https://github.com/dnplus/streamlit-oauth)，感謝原作者提供的優秀 Popup 機制架構。
-
-### 關於 Webhook
-
-本套件提供 **前端互動層**，適合即時付款體驗。
-**生產環境建議架構**：
-
-```
-Streamlit App (此套件)     →  即時 UI、付款按鈕、用戶體驗
-      ↓
-PayPal Orders API          →  創建訂單、Popup 付款
-      ↓
-你的後端 + Webhook         →  接收 PAYMENT.CAPTURE.COMPLETED
-                              持久化訂單、發貨、授權等
+```bash
+python test_paypal_component.py
 ```
 
-**為何需要 Webhook？**
-- ✅ 可靠性：即使用戶關閉瀏覽器也能處理
-- ✅ 安全性：Server-to-Server 驗證
-- ✅ 完整性：接收所有付款事件（成功、失敗、退款等）
+## 📊 Architecture Design
 
-參考：[PayPal Webhooks 文檔](https://developer.paypal.com/docs/api-basics/notifications/webhooks/)
+### Why Popup Mode?
 
-## 📝 授權
+1. **Simpler URL Handling**: Returns Python dict directly, no callback URL parsing needed
+2. **Better UX**: Dedicated window feels more professional, doesn't interrupt main app flow
+3. **State Management**: Auto-integrates with Streamlit session state
+4. **Enhanced Security**: Reduces URL parameter exposure risks
 
-MIT License
+### Production Architecture
+
+This package provides the **frontend interaction layer** for immediate payment experiences.
+
+**Recommended production setup**:
+
+```
+Streamlit App (this package)  →  Real-time UI, payment buttons, user experience
+         ↓
+PayPal Orders API             →  Create orders, popup payment flow
+         ↓
+Your Backend + Webhooks       →  Receive PAYMENT.CAPTURE.COMPLETED
+                                  Persist orders, fulfillment, authorization
+```
+
+**Why use Webhooks?**
+- ✅ Reliability: Process payments even if user closes browser
+- ✅ Security: Server-to-Server verification
+- ✅ Completeness: Receive all payment events (success, failure, refund, etc.)
+
+Reference: [PayPal Webhooks Documentation](https://developer.paypal.com/docs/api-basics/notifications/webhooks/)
+
+## 🙏 Acknowledgments
+
+This project is forked from [dnplus/streamlit-oauth](https://github.com/dnplus/streamlit-oauth). Special thanks to the original author for the excellent popup mechanism architecture.
+
+## 📝 License
+
+MIT License - see [LICENSE](LICENSE) file for details
 
 ---
 
-**版本：** 0.1.14
-**狀態：** 🟢 Active Development
+**Version:** 1.0.0
+**Status:** 🟢 Active Development
