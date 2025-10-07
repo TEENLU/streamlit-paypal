@@ -165,6 +165,40 @@ Your Backend + Webhooks       →  Receive PAYMENT.CAPTURE.COMPLETED
 
 Reference: [PayPal Webhooks Documentation](https://developer.paypal.com/docs/api-basics/notifications/webhooks/)
 
+## 🚀 Moving to Production
+
+This package supports both `sandbox` and `production` modes. **The API calls are identical** - only the endpoint URLs and credentials differ.
+
+### Switching from Sandbox to Production
+
+**What you need to change**:
+1. **Get production credentials** from [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/)
+2. **Update your environment variables**:
+   ```bash
+   PAYPAL_CLIENT_ID=your_production_client_id
+   PAYPAL_CLIENT_SECRET=your_production_client_secret
+   ```
+3. **Change mode parameter**:
+   ```python
+   paypal = PayPalComponent(
+       client_id=os.getenv('PAYPAL_CLIENT_ID'),
+       client_secret=os.getenv('PAYPAL_CLIENT_SECRET'),
+       mode='production'  # Changed from 'sandbox'
+   )
+   ```
+
+**That's it!** The code works exactly the same way.
+
+### Important Notes
+
+⚠️ **Account Requirements**: Production mode requires a verified PayPal Business Account. If you encounter transaction errors in production (but not in sandbox), this is typically due to account verification or regional compliance requirements, not the code.
+
+**For account setup and verification issues**, please refer to:
+- [PayPal Business Account Setup](https://www.paypal.com/business)
+- [Going Live with PayPal APIs](https://developer.paypal.com/api/rest/production/)
+
+**Testing Note**: This package has been extensively tested in sandbox mode. According to [PayPal's documentation](https://developer.paypal.com/docs/api-basics/sandbox/), sandbox "processes behave the same as they do on production servers" with identical API features.
+
 ## 🙏 Acknowledgments
 
 This project is forked from [dnplus/streamlit-oauth](https://github.com/dnplus/streamlit-oauth). Special thanks to the original author for the excellent popup mechanism architecture.
