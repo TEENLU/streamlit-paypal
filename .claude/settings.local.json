@@ -14,7 +14,18 @@
       "Bash(python test_paypal_component.py:*)",
       "Bash(tree:*)",
       "Bash(git restore:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(git mv:*)",
+      "Bash(pip uninstall:*)",
+      "Bash(pip install:*)",
+      "Read(//Users/lvdeen/3droid_template_en/pages/**)",
+      "Read(//Users/lvdeen/3droid_template_en/**)",
+      "WebFetch(domain:docs.streamlit.io)",
+      "Bash(python3:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git filter-branch:*)"
     ],
     "deny": [],
     "ask": []

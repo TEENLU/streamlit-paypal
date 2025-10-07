@@ -25,6 +25,7 @@ venv/
 ENV/
 env/
 .venv
+.env
 
 # IDE
 .vscode/
@@ -50,6 +51,9 @@ build/
 
 # Streamlit
 .streamlit/
+
+# Documentation (internal tracking only)
+docs/
 
 # OS
 .DS_Store

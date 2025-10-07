@@ -6,8 +6,8 @@ README = (Path(__file__).parent/"README.md").read_text(encoding="utf8")
 setuptools.setup(
     name="streamlit-paypal",
     version="0.1.14",
-    author="Dylan Lu (original), PayPal integration by contributors",
-    author_email="dnplus@gmail.com",
+    author="TEENLU",
+    author_email="ivanru372@gmail.com",
     description="PayPal payment integration for Streamlit apps",
     long_description=README,
     long_description_content_type="text/markdown",

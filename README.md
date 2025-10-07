@@ -10,16 +10,6 @@
 
 > 本專案 fork 自 [streamlit-oauth](https://github.com/dnplus/streamlit-oauth)，專注於 PayPal 付款整合。
 
-## ✨ 特色
-
-- 🔒 **安全優先**：Client Secret 只在後端使用，前端零洩漏風險
-- 🪟 **Popup 結帳**：專業的彈窗付款體驗，不中斷應用流程
-- ✅ **自動捕獲**：付款完成後自動捕獲訂單
-- 🛡️ **CSRF 防護**：內建訂單驗證與超時機制
-- 🌍 **多幣別支援**：USD、EUR、GBP、TWD、JPY 等
-- 🧪 **Sandbox 就緒**：輕鬆使用 PayPal 測試環境
-- 🎯 **取消處理**：完整的付款取消與錯誤處理
-
 ## 🚀 快速開始
 
 ### 1. 安裝套件
@@ -35,6 +25,7 @@ pip install -e .
 ```bash
 PAYPAL_CLIENT_ID=你的_Client_ID
 PAYPAL_CLIENT_SECRET=你的_Client_Secret
+PAYPAL_REDIRECT_URI=你要導回的URI
 ```
 
 ### 3. 執行範例
@@ -176,14 +167,6 @@ npm run dev
 
 本專案 fork 自 [dnplus/streamlit-oauth](https://github.com/dnplus/streamlit-oauth)，感謝原作者提供的優秀 Popup 機制架構。
 
-## 🗺️ 未來規劃
-
-- [ ] 支援更多付款方式（Stripe、LINE Pay）
-- [ ] 訂閱付款功能
-- [ ] 退款 API
-- [ ] Webhook 整合範例（生產環境必備）
-- [ ] 發布到 PyPI
-
 ### 關於 Webhook
 
 本套件提供 **前端互動層**，適合即時付款體驗。
@@ -204,10 +187,6 @@ PayPal Orders API          →  創建訂單、Popup 付款
 - ✅ 完整性：接收所有付款事件（成功、失敗、退款等）
 
 參考：[PayPal Webhooks 文檔](https://developer.paypal.com/docs/api-basics/notifications/webhooks/)
-
-## 🙏 致謝
-
-本專案 fork 自 [dnplus/streamlit-oauth](https://github.com/dnplus/streamlit-oauth)，感謝原作者提供的優秀 Popup 機制架構。
 
 ## 📝 授權
 
