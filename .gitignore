@@ -6,7 +6,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+/dist/
 downloads/
 eggs/
 .eggs/
@@ -44,10 +44,10 @@ env/
 htmlcov/
 .tox/
 
-# Distribution
-dist/
-build/
-*.egg-info/
+# Distribution (only root level)
+/dist/
+/build/
+/*.egg-info/
 
 # Streamlit
 .streamlit/
