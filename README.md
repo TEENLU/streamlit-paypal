@@ -38,7 +38,7 @@ import os
 paypal = PayPalComponent(
     client_id=os.getenv('PAYPAL_CLIENT_ID'),
     client_secret=os.getenv('PAYPAL_CLIENT_SECRET'),
-    mode='sandbox'  # Use 'live' for production
+    mode='sandbox'  # Use 'production' for live environment
 )
 
 # Create payment button
@@ -68,7 +68,7 @@ else:
 paypal = PayPalComponent(
     client_id: str,           # PayPal Client ID
     client_secret: str,       # PayPal Client Secret
-    mode: str = 'sandbox'     # 'sandbox' or 'live'
+    mode: str = 'sandbox'     # 'sandbox' or 'production'
 )
 
 result = paypal.payment_button(
