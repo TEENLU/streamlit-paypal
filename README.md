@@ -31,31 +31,51 @@ Then use the component in your Streamlit app:
 
 ```python
 import streamlit as st
-from streamlit_paypal import PayPalComponent
+from streamlit_paypal import PayPalComponent, PayPalError
 import os
+from dotenv import load_dotenv
 
-# Initialize PayPal component
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize PayPal component (Sandbox mode)
 paypal = PayPalComponent(
     client_id=os.getenv('PAYPAL_CLIENT_ID'),
     client_secret=os.getenv('PAYPAL_CLIENT_SECRET'),
-    mode='sandbox'  # Use 'production' for live environment
+    mode='sandbox'
 )
 
-# Create payment button
-if 'payment' not in st.session_state:
-    result = paypal.payment_button(
-        name="Pay $10 USD",
-        amount=10.00,
-        currency='USD',
-        description='Product Purchase',
-        return_url='https://yourapp.streamlit.app'  # Required!
-    )
+# Define return URL (must match your Streamlit app URL)
+RETURN_URL = os.getenv("PAYPAL_REDIRECT_URI", "http://localhost:8501")
 
-    if result:
-        st.session_state.payment = result
-        st.rerun()
+# Main payment flow
+if 'payment' not in st.session_state:
+    try:
+        # Display PayPal button
+        result = paypal.payment_button(
+            name="Pay $10 USD",
+            amount=10.00,
+            currency='USD',
+            description='Product Purchase',
+            return_url=RETURN_URL,
+            key='paypal_button'
+        )
+
+        # If payment is completed, store result and rerun
+        if result:
+            st.session_state.payment = result
+            st.rerun()
+
+    except PayPalError as e:
+        st.error(f"❌ PayPal Error: {str(e)}")
+
 else:
-    st.success(f"Payment successful! Order ID: {st.session_state.payment['order_id']}")
+    # Show success message after payment
+    st.success(f"✅ Payment successful! Order ID: {st.session_state.payment['order_id']}")
+    if st.button("New Payment"):
+        del st.session_state.payment
+        st.rerun()
+
 ```
 
 > **⚠️ Production Notice**: This component uses Streamlit session state for immediate interaction. For reliable order processing in production (handling network interruptions, browser closures, etc.), configure **PayPal Webhooks** to receive payment notifications server-side and persist order states.
